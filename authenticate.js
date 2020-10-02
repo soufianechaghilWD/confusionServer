@@ -7,6 +7,7 @@ var extractJwt = require("passport-jwt").ExtractJwt;
 var jwt = require("jsonwebtoken");
 
 var config = require("./config");
+const Dishes = require("./models/dishes");
 
 exports.local = passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
@@ -35,3 +36,12 @@ exports.jwtPassport = passport.use(
 );
 
 exports.verifyUser = passport.authenticate("jwt", { session: false });
+exports.verifyAdmin = (req, res, next) => {
+  if (req.user.admin) {
+    return next();
+  } else {
+    var err = new Error("Not authorized");
+    err.status = 403;
+    return next(err);
+  }
+};
